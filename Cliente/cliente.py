@@ -1,19 +1,30 @@
 import socket
+import time
 
 def cliente(filename, host, port, protocolo):
     BUFFER_SIZE = 4096
+    TIMEOUT = 0.1  # Tempo limite em segundos
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        
+        s.settimeout(TIMEOUT)  # Definindo o tempo limite
+
         print(f'Cliente {protocolo}://{host}:{port}/{filename}')
-        s.connect((host, port))
-        with open(filename, 'rb') as f:
-            while True:
-                data = f.read(BUFFER_SIZE)
-                if not data:
-                    break
-                s.sendall(data)
-                print("Arquivo enviado com sucesso")
+        try:
+            s.connect((host, port))
+            s.sendall(filename.encode())
+            
+            response = s.recv(4096)
+            if response.decode() == 'Erro ao enviar o arquivo':
+                print("Erro ao enviar o arquivo para o servidor porque o arquivo já exixte no servidor")
+            else:
+                with open(filename, 'rb') as f:
+                    while True:
+                        data = f.read(BUFFER_SIZE)
+                        if not data:
+                            break
+                        s.sendall(data)
+        except socket.timeout:
+            print("Arquivo enviado com sucesso")
 
 FILENAME = 'arquivo1.html'
 HOST = '127.0.0.1'  

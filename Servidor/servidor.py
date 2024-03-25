@@ -12,14 +12,16 @@ def servidor(file, host, port, caminho):
         with conn:
             print(f'Conectado com o cliente por {addr}')
             if os.path.exists(file):
-                print("Erro: Este arquivo já exixte.")
+                conn.sendall(b'Erro ao enviar o arquivo')
+                print('Erro: Este arquivo já exixte.')
             else:
                 with open(file, 'wb') as f:
                     while True:
-                        data = conn.recv(BUFFER_SIZE)
+                        data = conn.recv(4096)
                         if not data:
                             break
                         f.write(data)
+                conn.sendall(b'Arquivo recebido com sucesso!')
                 print('Arquivo recebido com sucesso!')
 
 SAVEFILE = 'arquivo1.html'
