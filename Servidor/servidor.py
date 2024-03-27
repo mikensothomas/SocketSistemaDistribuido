@@ -1,31 +1,30 @@
 import socket
 import os
 
-def servidor(file, host, port, caminho):
+def servidor(host, port):
     BUFFER_SIZE = 4096
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
         s.listen()
-        print(f'Servidor {host}/{port}/{caminho}')
-        conn, addr = s.accept()
-        with conn:
+        print(f'Servidor {host}/{port}')
+        while True:
+            conn, addr = s.accept()
             print(f'Conectado com o cliente por {addr}')
-            if os.path.exists(file):
-                conn.sendall(b'Erro ao enviar o arquivo')
-                print('Erro: Este arquivo já exixte.')
-            else:
-                with open(file, 'wb') as f:
-                    while True:
-                        data = conn.recv(4096)
-                        if not data:
-                            break
-                        f.write(data)
-                conn.sendall(b'Arquivo recebido com sucesso!')
-                print('Arquivo recebido com sucesso!')
+            try:
+                with conn:
+                    nome_arquivo = conn.recv(BUFFER_SIZE).decode()
+                    if os.path.exists(nome_arquivo):
+                        with open(nome_arquivo, 'rb') as f:
+                            data = f.read()
+                        conn.sendall(data)
+                        print(f'Arquivo "{nome_arquivo}" enviado para o cliente.')
+                    else:
+                        conn.sendall(b'Erro: Arquivo nao encontrado no servidor.')
+                        print('Erro: Arquivo não encontrado no servidor.')
+            except Exception as e:
+                print(f"Erro ao enviar arquivo: {e}")
 
-SAVEFILE = 'arquivo1.html'
 HOST = '127.0.0.1'  
 PORT = 5000
-CAMINHO = 'Área de trabalho/SocketSistemaDistribuido/Servidor'
-servidor(SAVEFILE, HOST, PORT, CAMINHO)
+servidor(HOST, PORT)
