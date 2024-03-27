@@ -3,10 +3,10 @@ import time
 
 def cliente(filename, host, port, protocolo):
     BUFFER_SIZE = 4096
-    TIMEOUT = 0.1  # Tempo limite em segundos
+    TIMEOUT = 0.1
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(TIMEOUT)  # Definindo o tempo limite
+        s.settimeout(TIMEOUT)
 
         print(f'Cliente {protocolo}://{host}:{port}/{filename}')
         try:
