@@ -4,13 +4,13 @@ import os
 
 def cliente(host, port, nome_arquivo):
     BUFFER_SIZE = 4096
-
+    
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
             s.connect((host, port))
             print(f'Conectado ao servidor {host}/{port}')
 
-            if(os.path.exists(nome_arquivo)):
+            if os.path.exists(nome_arquivo):
                 print("Arquivo já existe")
             else:
                 s.sendall(nome_arquivo.encode())
@@ -31,13 +31,20 @@ def cliente(host, port, nome_arquivo):
         except Exception as e:
             print(f"Erro ao conectar ao servidor: {e}")
 
-HOST = '127.0.0.1'  
-PORT = 5000
-
 if len(sys.argv) != 2:
-    print("Uso: python3 cliente.py <nome_arquivo>")
+    print("Erro do URL")
     sys.exit(1)
 
-nome_arquivo = sys.argv[1]
+url = sys.argv[1]
+host_port = url.split('/')[2].split(':')
 
-cliente(HOST, PORT, nome_arquivo)
+if len(host_port) != 2:
+    print("URL inválida.")
+    sys.exit(1)
+
+host = host_port[0]
+port = int(host_port[1])
+
+nome_arquivo = url.split('/')[-1]
+
+cliente(host, port, nome_arquivo)
