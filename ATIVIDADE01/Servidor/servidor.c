@@ -67,7 +67,7 @@ int main() {
 
     int file = open(file_path, O_RDONLY);
     if (file < 0) {
-        perror("Erro ao abrir o arquivo");
+        perror("Arquivo não exixte");
         send(new_socket, "Erro: Arquivo não encontrado", strlen("Erro: Arquivo não encontrado"), 0);
         close(new_socket);
         close(server_fd);
