@@ -13,9 +13,9 @@ int main(int argc , char *argv[])
 	socket_desc = socket(AF_INET , SOCK_STREAM , 0);
 	if (socket_desc == -1)
 	{
-		printf("Could not create socket");
+		printf("O socket não pode ser criado");
 	}
-	puts("Socket created");
+	puts("O Socket foi criado");
 	
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
@@ -23,23 +23,23 @@ int main(int argc , char *argv[])
 	
 	if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
 	{
-		perror("bind failed. Error");
+		perror("A escuta falhou");
 		return 1;
 	}
-	puts("bind done");
+	puts("A escuta foi feito");
 	
 	listen(socket_desc , 3);
 	
-	puts("Waiting for incoming connections...");
+	puts("Esperando a conexão...");
 	c = sizeof(struct sockaddr_in);
 	
 	client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c);
 	if (client_sock < 0)
 	{
-		perror("accept failed");
+		perror("Falha de aceitação");
 		return 1;
 	}
-	puts("Connection accepted");
+	puts("Conexão aceitada");
 	
 	while( (read_size = recv(client_sock , client_message , 2000 , 0)) > 0 )
 	{
@@ -48,12 +48,12 @@ int main(int argc , char *argv[])
 	
 	if(read_size == 0)
 	{
-		puts("Client disconnected");
+		puts("Cliente desconectado");
 		fflush(stdout);
 	}
 	else if(read_size == -1)
 	{
-		perror("recv failed");
+		perror("O recebimento falhou");
 	}
 	
 	return 0;
