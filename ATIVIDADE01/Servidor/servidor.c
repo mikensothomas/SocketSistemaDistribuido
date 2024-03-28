@@ -9,14 +9,20 @@
 #include <errno.h>
 
 #define BUFFER_SIZE 4096
-#define PORT 5000 // Porta que o servidor usará
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Uso: %s <porta> <diretório_do_servidor>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int port = atoi(argv[1]); // Porta que o servidor usará
+    const char *file_directory = argv[2]; // Diretório onde os arquivos do servidor estão localizados
+
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
     char buffer[BUFFER_SIZE] = {0};
-    const char *file_directory = "./"; // Diretório onde os arquivos do servidor estão localizados
 
     // Criar um socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -27,7 +33,7 @@ int main() {
     // Configurar a estrutura do endereço
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
 
     // Vincular o socket a um endereço e porta
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
