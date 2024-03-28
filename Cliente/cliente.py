@@ -1,5 +1,6 @@
 import socket
 import sys
+import os
 
 def cliente(host, port, nome_arquivo):
     BUFFER_SIZE = 4096
@@ -9,21 +10,24 @@ def cliente(host, port, nome_arquivo):
             s.connect((host, port))
             print(f'Conectado ao servidor {host}/{port}')
 
-            s.sendall(nome_arquivo.encode())
-
-            data = b''
-            while True:
-                chunk = s.recv(BUFFER_SIZE)
-                if not chunk:
-                    break
-                data += chunk
-            
-            if data.startswith(b'Erro'):
-                print(data.decode())
+            if(os.path.exists(nome_arquivo)):
+                print("Arquivo já existe")
             else:
-                with open(nome_arquivo, 'wb') as f:
-                    f.write(data)
-                print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
+                s.sendall(nome_arquivo.encode())
+
+                data = b''
+                while True:
+                    chunk = s.recv(BUFFER_SIZE)
+                    if not chunk:
+                        break
+                    data += chunk
+                
+                if data.startswith(b'Erro'):
+                    print(data.decode())
+                else:
+                    with open(nome_arquivo, 'wb') as f:
+                        f.write(data)
+                    print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
         except Exception as e:
             print(f"Erro ao conectar ao servidor: {e}")
 

@@ -20,8 +20,8 @@ def servidor(host, port):
                         conn.sendall(data)
                         print(f'Arquivo "{nome_arquivo}" enviado para o cliente.')
                     else:
-                        conn.sendall(b'Erro: Arquivo nao encontrado no servidor.')
-                        print('Erro: Arquivo não encontrado no servidor.')
+                        conn.sendall(b'Erro: Arquivo nao encontrado no servidor ou ele ja existe no cliente.')
+                        print('Erro: Arquivo não encontrado no servidor ou ele ja existe no cliente.')
             except Exception as e:
                 print(f"Erro ao enviar arquivo: {e}")
 
