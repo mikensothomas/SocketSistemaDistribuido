@@ -9,14 +9,20 @@
 #include <errno.h>
 
 #define BUFFER_SIZE 4096
-#define PORT 5000 // Porta que o servidor usará
 
-int main() {
-    int server_fd, new_socket, valread;
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Uso: %s <porta> <caminho_do_arquivo>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    int PORT = atoi(argv[1]);
+    const char *file_path = argv[2];
+
+    int server_fd, new_socket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
     char buffer[BUFFER_SIZE] = {0};
-    const char *file_directory = "./"; // Diretório onde os arquivos do servidor estão localizados
 
     // Criar um socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -51,28 +57,16 @@ int main() {
 
     printf("Conexão estabelecida com sucesso.\n");
 
-    // Receber o nome do arquivo do cliente
-    valread = read(new_socket, buffer, BUFFER_SIZE);
-    if (valread < 0) {
+    ssize_t bytes_received = recv(new_socket, buffer, BUFFER_SIZE, 0);
+    if (bytes_received < 0) {
         perror("Erro ao receber o nome do arquivo");
         exit(EXIT_FAILURE);
     }
-    buffer[valread] = '\0';
 
-    printf("Solicitação recebida: %s\n", buffer);
+    buffer[bytes_received] = '\0'; // Terminar a string recebida
 
-    // Verificar se o arquivo solicitado existe
-    char file_path[BUFFER_SIZE + strlen(file_directory) + 1];
-    snprintf(file_path, sizeof(file_path), "%s%s", file_directory, buffer);
+    int file = open(buffer, O_RDONLY);
 
-    int file = open(file_path, O_RDONLY);
-    if (file < 0) {
-        perror("Arquivo não exixte");
-        send(new_socket, "Erro: Arquivo não encontrado", strlen("Erro: Arquivo não encontrado"), 0);
-        close(new_socket);
-        close(server_fd);
-        exit(EXIT_FAILURE);
-    }
 
     // Enviar confirmação ao cliente
     send(new_socket, "Arquivo OK", strlen("Arquivo OK"), 0);
