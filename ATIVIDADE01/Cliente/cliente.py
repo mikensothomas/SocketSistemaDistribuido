@@ -3,7 +3,6 @@ import sys
 import os
 
 def cliente(url):
-    # Extrair host, porta e nome do arquivo da URL
     parts = url.split('/')
     if len(parts) != 4 or parts[0] != 'http:' or ':' not in parts[2]:
         print("URL inválida.")
@@ -25,12 +24,10 @@ def cliente(url):
             else:
                 s.sendall(nome_arquivo.encode())
 
-                # Recebimento da confirmação do servidor
-                confirmation = s.recv(BUFFER_SIZE).decode()
-                if confirmation.startswith('Erro'):
-                    print(confirmation)
+                confirmacao = s.recv(BUFFER_SIZE).decode()
+                if confirmacao.startswith('Erro'):
+                    print(confirmacao)
                 else:
-                    # Recebimento do conteúdo do arquivo
                     with open(nome_arquivo, 'wb') as f:
                         while True:
                             chunk = s.recv(BUFFER_SIZE)
@@ -40,11 +37,11 @@ def cliente(url):
                         print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
 
         except Exception as e:
-            print(f"Erro ao conectar ao servidor: {e}")
+            print(f"Erro ao conectar com servidor: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Uso: python3 cliente.py <URL>")
+        print("URL inválido")
         sys.exit(1)
     
     url = sys.argv[1]
