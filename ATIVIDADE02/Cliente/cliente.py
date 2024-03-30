@@ -31,6 +31,7 @@ def main():
             cliente.send(resposta.encode())
             resposta_servidor = cliente.recv(1024).decode()
             print("Sua resposta foi:", resposta_servidor)
+            break
     else:
         print("Credenciais inválidas")
     cliente.close()
