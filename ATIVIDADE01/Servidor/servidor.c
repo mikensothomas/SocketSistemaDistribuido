@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define BUFFER_SIZE 4096
+#define armazena_dados_size 4096
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -22,54 +22,57 @@ int main(int argc, char *argv[]) {
     int servidor, cliente;
     struct sockaddr_in endereco;
     int tamanho_endereco = sizeof(endereco);
-    char buffer[BUFFER_SIZE] = {0};
+    char armazena_dados[armazena_dados_size] = {0};
 
     if ((servidor = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("Erro ao criar o socket");
+        printf("Erro ao criar o socket\n");
         exit(EXIT_FAILURE);
+    } else {
+        endereco.sin_family = AF_INET;
+        endereco.sin_addr.s_addr = INADDR_ANY;
+        endereco.sin_port = htons(PORT);
     }
 
-    endereco.sin_family = AF_INET;
-    endereco.sin_addr.s_addr = INADDR_ANY;
-    endereco.sin_port = htons(PORT);
-
     if (bind(servidor, (struct sockaddr *)&endereco, sizeof(endereco)) < 0) {
-        perror("Erro ao realizar o bind");
+        printf("Erro ao configurar o socket\n");
         exit(EXIT_FAILURE);
     }
 
     if (listen(servidor, 3) < 0) {
-        perror("Erro ao escutar por conexões");
+        printf("Erro ao escutar por conexões\n");
         exit(EXIT_FAILURE);
+    } else {
+        printf("Aguardando conexões...\n");
     }
-
-    printf("Aguardando conexões...\n");
 
     if ((cliente = accept(servidor, (struct sockaddr *)&endereco, (socklen_t*)&tamanho_endereco)) < 0) {
-        perror("Erro ao aceitar a conexão");
+        printf("Erro ao aceitar a conexão\n");
         exit(EXIT_FAILURE);
+    } else{
+        printf("Conexão estabelecida com sucesso.\n");
     }
 
-    printf("Conexão estabelecida com sucesso.\n");
-
-    ssize_t bytes_received = recv(cliente, buffer, BUFFER_SIZE, 0);
-    if (bytes_received < 0) {
-        perror("Erro ao receber o nome do arquivo");
+    ssize_t dado_recebido = recv(cliente, armazena_dados, armazena_dados_size, 0);
+    if (dado_recebido < 0) {
+        printf("Erro ao receber o nome do arquivo\n");
         exit(EXIT_FAILURE);
+    } else {
+        if (open(arquivo, 'r')) {
+            armazena_dados[dado_recebido] = '\0';
+            printf("Arquivo enviado com sucesso\n");
+        } else {
+            printf("Erro ao enviar o arquivo");
+        }
     }
 
-    buffer[bytes_received] = '\0';
-
-    int file = open(buffer, O_RDONLY);
-
-
+    int file = open(armazena_dados, O_RDONLY);
     send(cliente, "Arquivo OK", strlen("Arquivo OK"), 0);
 
     ssize_t bytes_sent, bytes_read;
-    while ((bytes_read = read(file, buffer, BUFFER_SIZE)) > 0) {
-        bytes_sent = send(cliente, buffer, bytes_read, 0);
+    while ((bytes_read = read(file, armazena_dados, armazena_dados_size)) > 0) {
+        bytes_sent = send(cliente, armazena_dados, bytes_read, 0);
         if (bytes_sent < 0) {
-            perror("Erro ao enviar o arquivo");
+            printf("Erro ao enviar o arquivo\n");
             exit(EXIT_FAILURE);
         }
     }
