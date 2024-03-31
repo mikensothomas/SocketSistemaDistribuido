@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
-        fprintf(stderr, "Uso: %s <porta> <caminho_do_arquivo>\n", argv[0]);
+        printf("Use: <./servidor 5000 /Downloads/SocketSistemaDistribuido/ATIVIDADE01/Servidor> para roda o servidor\n");
         return EXIT_FAILURE;
     }
 

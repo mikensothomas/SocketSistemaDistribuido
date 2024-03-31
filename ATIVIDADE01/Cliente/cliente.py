@@ -5,7 +5,7 @@ import os
 def cliente(url):
     parts = url.split('/')
     if len(parts) != 4 or parts[0] != 'http:' or ':' not in parts[2]:
-        print("URL inválida.")
+        print("Use <python3 cliente.py http://127.0.0.1:5000/nome do arquivo> para conectar o cliente")
         sys.exit(1)
     
     host = parts[2].split(':')[0]
@@ -30,10 +30,10 @@ def cliente(url):
                 else:
                     with open(nome_arquivo, 'wb') as f:
                         while True:
-                            chunk = s.recv(BUFFER_SIZE)
-                            if not chunk:
+                            dado = s.recv(BUFFER_SIZE)
+                            if not dado:
                                 break
-                            f.write(chunk)
+                            f.write(dado)
                         print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
 
         except Exception as e:
