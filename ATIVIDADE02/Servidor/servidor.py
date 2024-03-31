@@ -17,8 +17,8 @@ def servidor(host, porta):
     
 
     while True:
-        matricula = '12'
-        senha = '12'
+        matricula = '123456'
+        senha = 'senha123'
         questao_certa = 0
         qtd_questao = 5
         nota_total = 0
