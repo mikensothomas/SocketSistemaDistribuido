@@ -17,9 +17,8 @@ int main(int argc, char *argv[]) {
     }
 
     int PORT = atoi(argv[1]);
-    const char *arquivo = argv[2];
 
-    int servidor, cliente;
+    int servidor, cliente, file_size;
     struct sockaddr_in endereco;
     int tamanho_endereco = sizeof(endereco);
     char armazena_dados[armazena_dados_size] = {0};
@@ -52,34 +51,24 @@ int main(int argc, char *argv[]) {
         printf("Conexão estabelecida com sucesso.\n");
     }
 
-    ssize_t dado_recebido = recv(cliente, armazena_dados, armazena_dados_size, 0);
+    char arquivo[armazena_dados_size];
+    ssize_t dado_recebido = recv(cliente, arquivo, sizeof(arquivo), 0);
     if (dado_recebido < 0) {
         printf("Erro ao receber o nome do arquivo\n");
         exit(EXIT_FAILURE);
     } else {
-        if (open(arquivo, 'r')) {
-            armazena_dados[dado_recebido] = '\0';
+        arquivo[dado_recebido] = '\0';
+        FILE *file = fopen(arquivo, "r");
+        if (file != NULL) {
+            fclose(file);
             printf("Arquivo enviado com sucesso\n");
         } else {
-            printf("Erro ao enviar o arquivo");
-        }
-    }
-
-    int file = open(armazena_dados, O_RDONLY);
-    send(cliente, "Arquivo OK", strlen("Arquivo OK"), 0);
-
-    ssize_t bytes_sent, bytes_read;
-    while ((bytes_read = read(file, armazena_dados, armazena_dados_size)) > 0) {
-        bytes_sent = send(cliente, armazena_dados, bytes_read, 0);
-        if (bytes_sent < 0) {
-            printf("Erro ao enviar o arquivo\n");
-            exit(EXIT_FAILURE);
+            printf("Erro ao enviar o arquivo para o cliente\n");
         }
     }
 
     close(cliente);
     close(servidor);
-    close(file);
 
     return 0;
 }

@@ -19,29 +19,25 @@ def cliente(url):
             s.connect((host, port))
             print(f'Conectado ao servidor {host}/{port}')
 
-            if(os.path.exists(nome_arquivo)):
-                print("Arquivo já exixte no diretório do cliente")
+            if os.path.exists(nome_arquivo):
+                print("Arquivo já existe no diretório do cliente")
             else:
                 s.sendall(nome_arquivo.encode())
 
-                confirmacao = s.recv(armazena_dados_size).decode()
-                if confirmacao.startswith('Erro'):
-                    print(confirmacao)
-                else:
-                    with open(nome_arquivo, 'wb') as f:
-                        while True:
-                            dado = s.recv(armazena_dados_size)
-                            if not dado:
-                                break
-                            f.write(dado)
-                        print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
+                with open(nome_arquivo, 'wb') as f:
+                    while True:
+                        dado = s.recv(armazena_dados_size)
+                        if not dado:
+                            break
+                        f.write(dado)
+                    print(f'Arquivo "{nome_arquivo}" recebido com sucesso.')
 
         except Exception as e:
             print(f"Erro ao conectar com servidor: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("URL inválido")
+        print("URL inválida")
         sys.exit(1)
     
     url = sys.argv[1]
