@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
         arquivo[dado_recebido] = '\0';
         FILE *file = fopen(arquivo, "r");
         if (file != NULL) {
+            //write()
             fclose(file);
             printf("Arquivo enviado com sucesso\n");
         } else {
